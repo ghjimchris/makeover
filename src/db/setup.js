@@ -1,6 +1,6 @@
-import Database from "better-sqlite3";
+import Database from 'better-sqlite3';
 
-const db = new Database("esg.db");
+const db = new Database('esg.db');
 
 // Users table
 db.exec(`
