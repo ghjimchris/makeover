@@ -60,8 +60,9 @@ function LandingPage() {
          <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
            <TeamSection />
          </div>
-       </section>
-
+      </section>
+      
+     
        {/* Footer */}
        <footer className="py-12 text-white bg-gray-800">
          <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
