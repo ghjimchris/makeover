@@ -82,8 +82,8 @@ function LandingPage() {
              <div>
                <h3 className="mb-4 text-xl font-semibold">Contact</h3>
                <p className="text-gray-400">
-                 Email: info@esgdashboard.com<br />
-                 Phone: (555) 123-4567
+                 Email: info@admin.com<br />
+                 Phone: (233) 123-4567
                </p>
              </div>
            </div>
