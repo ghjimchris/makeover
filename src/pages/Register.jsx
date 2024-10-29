@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { useAuth } from '../context/AuthContext';
 
 function Register() {
@@ -27,9 +26,37 @@ function Register() {
     setIsLoading(true);
 
     try {
-      // Mock successful registration for demo
-      const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRlbW91c2VyIiwiZW1haWwiOiJkZW1vQGV4YW1wbGUuY29tIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-      login(mockToken);
+      // For demo purposes, we'll store users in localStorage
+      // In a real app, this would be an API call
+      const storedUsers = JSON.parse(localStorage.getItem('esg_users') || '[]');
+      
+      // Check if email already exists
+      if (storedUsers.some(user => user.email === formData.email)) {
+        throw new Error('Email already registered');
+      }
+
+      // Store new user
+      const newUser = {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password // In a real app, this would be hashed
+      };
+
+      localStorage.setItem('esg_users', JSON.stringify([...storedUsers, newUser]));
+
+      // Create mock token
+      const mockToken = btoa(JSON.stringify({
+        username: newUser.username,
+        email: newUser.email,
+        exp: Math.floor(Date.now() / 1000) + 3600 // 1 hour expiration
+      }));
+
+      const userData = {
+        username: newUser.username,
+        email: newUser.email
+      };
+
+      login(mockToken, userData);
       navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Failed to register');
@@ -46,20 +73,20 @@ function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-4 py-12 bg-gray-50 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-3xl font-extrabold text-center text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Create your account
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="p-4 rounded-md bg-red-50">
+            <div className="rounded-md bg-red-50 p-4">
               <div className="text-sm text-red-700">{error}</div>
             </div>
           )}
-          <div className="-space-y-px rounded-md shadow-sm">
+          <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="username" className="sr-only">Username</label>
               <input
@@ -67,7 +94,7 @@ function Register() {
                 name="username"
                 type="text"
                 required
-                className="relative block w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-none appearance-none rounded-t-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                 placeholder="Username"
                 value={formData.username}
                 onChange={handleChange}
@@ -80,7 +107,7 @@ function Register() {
                 name="email"
                 type="email"
                 required
-                className="relative block w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-none appearance-none focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                 placeholder="Email address"
                 value={formData.email}
                 onChange={handleChange}
@@ -93,7 +120,7 @@ function Register() {
                 name="password"
                 type="password"
                 required
-                className="relative block w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-none appearance-none focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
@@ -107,7 +134,7 @@ function Register() {
                 name="confirmPassword"
                 type="password"
                 required
-                className="relative block w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-none appearance-none rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                 placeholder="Confirm Password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
@@ -120,7 +147,7 @@ function Register() {
             <button
               type="submit"
               disabled={isLoading}
-              className="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md group bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
             >
               {isLoading ? 'Creating account...' : 'Create account'}
             </button>

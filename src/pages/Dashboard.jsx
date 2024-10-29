@@ -71,7 +71,7 @@ function Dashboard() {
 
   return (
     <div className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
-      <h1 className="mb-8 text-3xl font-bold text-gray-900">Welcome, {user.name}!</h1>
+      <h1 className="mb-8 text-3xl font-bold text-gray-900">Welcome, {user?.username}!</h1>
 
       <div className="grid gap-8 md:grid-cols-2">
         <div className="p-6 bg-white rounded-lg shadow-md">

@@ -15,6 +15,7 @@
     "axios": "^1.6.7",
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
+    "prop-types": "^15.8.1",
     "reacharts": "^0.4.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

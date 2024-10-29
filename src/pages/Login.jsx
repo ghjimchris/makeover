@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { authApi } from '../services/api';
 
 function Login() {
   const navigate = useNavigate();
@@ -19,11 +18,28 @@ function Login() {
     setIsLoading(true);
 
     try {
-      const { token } = await authApi.login(formData);
-      login(token);
-      navigate('/dashboard');
+      const storedUsers = JSON.parse(localStorage.getItem('esg_users') || '[]');
+      const user = storedUsers.find(u => u.email === formData.email && u.password === formData.password);
+
+      if (!user) {
+        throw new Error('Invalid email or password');
+      }
+
+      const mockToken = btoa(JSON.stringify({
+        username: user.username,
+        email: user.email,
+        exp: Math.floor(Date.now() / 1000) + 3600 // 1 hour expiration
+      }));
+
+      const userData = {
+        username: user.username,
+        email: user.email
+      };
+
+      login(mockToken, userData);
+      navigate('/dashboard', { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to login');
+      setError(err.message || 'Failed to login');
     } finally {
       setIsLoading(false);
     }
@@ -83,7 +99,7 @@ function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
